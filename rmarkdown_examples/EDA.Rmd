@@ -1,0 +1,215 @@
+---
+title: "Exploration of feed data"
+author: "mdneuzerling"
+date: "June 6, 2018"
+output: html_document
+---
+    
+```{r setup_hidden, include = FALSE}
+knitr::opts_chunk$set(cache = TRUE, out.width = "100%")
+options(scipen = 999)
+set.seed(42275) # Chosen by fair dice roll. Guaranteed to be random.
+```
+
+## Setup
+```{r packages, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(sqldf)
+library(visdat)
+library(broom)
+library(lmtest) 
+library(forecast)
+library(hts)
+```
+
+Load the feed data and change the column names to lower-case with underscores.
+
+```{r setup}
+feed_raw <- "feed.csv" %>% 
+    read_csv %>% 
+    rename_all(.funs = function(x) {gsub(" ", "_", x) %>% tolower})
+```
+
+At this point we've loaded the raw csv data with the `read_csv` function. 
+`read_csv` does not convert strings to factors, but we do have a few factors
+here. The year variables are all integers and begin with Y, while the longitude
+and latitude variables are numerics. The rest we convert to factors.
+
+```{r}
+feed_raw <- feed_raw %>% mutate_at(
+vars(-starts_with("y"), -starts_with("l")), 
+funs(as.factor)
+)
+```
+
+The initial wide format isn't very convenient for modelling, but it is 
+appropriate for visualising the missing data.
+Some missing data, but it seems that a row is either complete, or is missing
+an entire string of years. It actually looks as though collection starts in 
+different years for each item, but once collection starts it continues
+uninterrupted. What happened in 1993?
+    
+    ```{r, out.width="100%"}
+feed_raw %>% vis_dat(warn_large_data = FALSE) +
+    theme(axis.text = element_text(size = 8)) 
+```
+
+Let's clean this up. We gather all of those year columns into a simple 
+Key/Value long format. We then take the four right-most characters of each year,
+effectively dropping the "Y" in front of each year.
+
+```{r gather}
+feed <- feed_raw %>% 
+gather(key = year, value = production, starts_with("y")) %>% 
+mutate(year = year %>% substr(2, 5) %>% as.numeric)
+```
+
+Change in food and feed production over the years.
+```{r, out.width = "100%"}
+feed %>%
+group_by(year, element) %>% 
+summarise(production = production %>% sum(na.rm = TRUE)) %>%
+ggplot(aes(x = year, y = production, group = element, colour = element)) +
+geom_line() + 
+scale_x_continuous(
+breaks = seq(min(feed$year), max(feed$year), 4)
+)
+```
+
+We use an SQL join to introduce a change column for each (Area, Item,
+Element) tuple, so that we can track how much production has increased or
+decreased since last year. I can't think of a *clean* way to do this with the
+usual R `merge` function, and SQL seems so well-suited for the task.
+
+```{r production_last_year}
+feed <- sqldf(
+    "
+    SELECT       CURRENTYEAR.*
+    ,LASTYEAR.production AS production_last_year
+    ,CURRENTYEAR.production - LASTYEAR.production as production_change
+    FROM        feed AS CURRENTYEAR
+    LEFT JOIN   feed AS LASTYEAR
+    ON      CURRENTYEAR.area = LASTYEAR.area
+    AND     CURRENTYEAR.item = LASTYEAR.item
+    AND     CURRENTYEAR.element = LASTYEAR.element
+    AND     CURRENTYEAR.year = LASTYEAR.year + 1
+    "
+)
+```
+
+Heat map showing change in production for each category.
+
+```{r heat_map, fig.height=20, fig.width=12}
+feed %>% 
+    group_by(year, item) %>%
+    filter(!is.na(production_last_year)) %>% 
+    summarise(
+        production = production %>% sum(na.rm = TRUE),
+        production_last_year = production_last_year %>% sum(na.rm = TRUE)
+    ) %>% 
+    mutate(percent_production_change = 
+               (production - production_last_year) / production_last_year) %>% 
+    ggplot(aes(x = year, y = item, fill = percent_production_change)) +
+    geom_raster() +
+    scale_fill_gradient2(low = "blue", mid = "white", high = "red",
+                         limits = c(-0.5, 0.5))
+```
+
+## Data quality
+
+There's a mixup with items and elements:
+
+```{r duplicate_item_codes}
+feed %>% 
+distinct(item, item_code) %>% 
+count(item) %>% 
+filter(n > 1) %>% 
+merge(feed, by = "item") %>% 
+group_by(item, item_code) %>% 
+summarise(production = sum(production, na.rm = TRUE))
+```
+
+However, there is no duplication of item_code. Moreover, it seems as though
+the production figures for 2949 and 2744 are identical, as are 2848 and 2948.
+As such, we can safely dedupe the data by excluding an arbitrary item code in 
+each pair.
+
+```{r deduping}
+feed <- feed %>% filter(!(item_code %in% c(2948, 2949)))
+```
+
+## Some quick models
+
+Creating quick linear models for every element/item combination. We know that 
+data collection doesn't start in the same year for each item, but once it does
+start there are no more missing observations. By dropping the missing 
+observations, we're training our models only on the years after data collection
+has started.
+
+```{r broom_lm}
+feed %>% 
+filter(!is.na(production)) %>% 
+group_by(year, element, item) %>% 
+summarise(production = sum(production)) %>% 
+group_by(element, item) %>% 
+do(glance(lm(production ~ year, data = .)))
+```
+
+There are some encouraging results in here, but unfortunately we have some 
+autocorrelation issues. That is to say, the residuals correlate with one
+another (with a lag of 1). We know this because of the Durbin-Watson test:
+
+```{r Durbin-Watson}
+feed %>% 
+filter(!is.na(production)) %>% 
+group_by(year) %>% 
+summarise(production = sum(production)) %>% 
+lmtest::dwtest(production ~ year, data = .)
+```
+
+We can see this autocorrelation in the residuals plot:
+
+```{r linear_residuals}
+feed %>% 
+filter(!is.na(production)) %>%
+group_by(year) %>% 
+summarise(production = sum(production)) %>% 
+lm(production ~ year, data = .) %>% 
+ggplot(aes(x = .fitted, y = .resid)) + 
+geom_point() + 
+geom_hline(yintercept = 0)
+```
+
+We can define a hierarchical time series, in which every feed/food and item
+combination is forecast as an independent time series, which are aggregated
+up to the top level.
+
+```{r grouped_time_series}
+element_item_ts <- feed %>% 
+mutate(element_item = paste0(element, item_code)) %>% 
+group_by(year, element_item) %>% 
+summarise(production = sum(production, na.rm = TRUE)) %>% 
+spread(key = element_item, value = production) %>%
+ungroup %>% 
+ts( 
+data = as.matrix(select(., -year)),
+start = min(.[["year"]]), 
+end = max(.[["year"]]), 
+frequency = 1 
+) %>% 
+gts(characters = list(c(4), c(4)), gnames = c("element", "item_code"))
+```
+
+Forecast the hierarchical time series bottom-up. The bottom graph contains over
+200 time series, so isn't a very useful data visualisation.
+```{r hierarchical_forecast}
+forecast(element_item_ts, h = 10, fmethod = "arima", method = "bu") %>% 
+    plot(include = 20)
+```
+
+## Possible directions
+
+* Different time series forecast methods
+* Cross-validation of forecasting
+* Exogenous variables
+* Different types of categorisations, eg. climate based on latitude and longitude
