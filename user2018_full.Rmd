@@ -59,6 +59,8 @@ the function on the right:
 * `4 %>% sqrt` is the same as `sqrt(4)`
 * `data %>% head` is the same as `head(data)`
 
+--
+
 Or, if we wanted to calculate the average BMI of all droids in the Star Wars movies:
 
 ```{r starwars_piped, eval = FALSE}
@@ -455,6 +457,14 @@ diamonds %>%
 ]
 
 ---
+class: inverse, center, middle
+# Modifying data
+
+<img src="https://imgs.xkcd.com/comics/machine_learning.png" style="width: 35%; height: 35%;">
+
+https://xkcd.com/1838/
+
+---
 class: left
 ## Modifying data
 
@@ -621,12 +631,6 @@ class: inverse, middle, center
 Mean value imputation
 
 ---
-class: middle, center
-## Visualising missing data
-
-<img src = "feed_vis_dat.jpg" style="width: 65%; height: 65%;"></img>
-
----
 ## Ozone data
 
 .pull-left[
@@ -639,7 +643,7 @@ vis_miss(ozone)
 ]
 
 .pull-right[
-```{r naniar_plot, warning = FALSE, message = FALSE, echo = FALSE, dpi = 300, out.height = 420, out.width = 420}
+```{r naniar_plot, warning = FALSE, message = FALSE, echo = FALSE, dpi = 300, fig.width = 5, fig.height = 5, out.height = 500, out.width = 500}
 library(naniar)
 ozone <- read_csv("data/ozoneNA.csv") %>% 
     select(-X1, -WindDirection)
@@ -648,11 +652,53 @@ vis_miss(ozone, cluster = TRUE)
 ]
 
 ---
-class: center, middle
+class: middle, center
+## Visualising missing data
 
-<img src="hex/shiny.png" style="width: 50%; height: 50%;"></img>
+```{r feed_data, include = FALSE}
+feed <- "data/feed.csv" %>% read_csv 
+```
+  
+```{r feed_visdat, echo = FALSE, warning = FALSE, message = FALSE, echo = FALSE, dpi = 300, fig.width = 10, fig.height = 5, out.height = 500, out.width = 1000}
+feed %>% visdat::vis_dat(warn_large_data = FALSE)
+```
 
 ---
-class: left, middle
+class: inverse, center, middle
+# Time series
 
-<img src="docker.png" style="width: 100%; height: 100%;"></img>  
+<img src="https://media.giphy.com/media/QYumYBnNm3Qw8/giphy.gif" style="width: 70%; height: 70%;"></img>
+
+---
+class: left
+## `fable`
+
+```{r library_fable, warning = FALSE, message = FALSE}
+library(fable) 
+```
+
+```{r cafe_data, eval = FALSE, warning = FALSE, message = FALSE}
+cafe <- fpp2::auscafe %>% as_tsibble
+cafe %>% head
+```
+
+```{r cafe_data_display, echo = FALSE}
+cafe  <- fpp2::auscafe %>% as_tsibble
+cafe %>% head %>% 
+    knitr::kable(format = "html") %>% 
+    kable_styling(font_size = 18)
+```
+
+---
+class: left
+## `fable`
+
+```{r fable_plot, warning = FALSE, message = FALSE, echo = TRUE, dpi = 300, fig.height = 4, fig.width = 10, out.height = 400, out.width = 1000}
+# Example by Rob Hyndman
+cafe %>% ARIMA(log(value) ~ pdq(2, 1, 1) + PDQ(2, 1, 2)) %>% forecast() %>% autoplot()
+```
+
+---
+class: inverse, center, middle
+
+<img src="hex/shiny.png" style="width: 50%; height: 50%;"></img>

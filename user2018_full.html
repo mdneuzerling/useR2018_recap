@@ -66,6 +66,8 @@ the function on the right:
 * `4 %&gt;% sqrt` is the same as `sqrt(4)`
 * `data %&gt;% head` is the same as `head(data)`
 
+--
+
 Or, if we wanted to calculate the average BMI of all droids in the Star Wars movies:
 
 
@@ -839,6 +841,14 @@ class: center
 ]
 
 ---
+class: inverse, center, middle
+# Modifying data
+
+&lt;img src="https://imgs.xkcd.com/comics/machine_learning.png" style="width: 35%; height: 35%;"&gt;
+
+https://xkcd.com/1838/
+
+---
 class: left
 ## Modifying data
 
@@ -969,12 +979,6 @@ class: inverse, middle, center
 Mean value imputation
 
 ---
-class: middle, center
-## Visualising missing data
-
-&lt;img src = "feed_vis_dat.jpg" style="width: 65%; height: 65%;"&gt;&lt;/img&gt;
-
----
 ## Ozone data
 
 .pull-left[
@@ -988,18 +992,89 @@ vis_miss(ozone)
 ]
 
 .pull-right[
-&lt;img src="user2018_full_files/figure-html/naniar_plot-1.png" width="420" height="420" /&gt;
+&lt;img src="user2018_full_files/figure-html/naniar_plot-1.png" width="500" height="500" /&gt;
 ]
 
 ---
-class: center, middle
+class: middle, center
+## Visualising missing data
 
-&lt;img src="hex/shiny.png" style="width: 50%; height: 50%;"&gt;&lt;/img&gt;
+
+  
+&lt;img src="user2018_full_files/figure-html/feed_visdat-1.png" width="1000" height="500" /&gt;
 
 ---
-class: left, middle
+class: inverse, center, middle
+# Time series
 
-&lt;img src="docker.png" style="width: 100%; height: 100%;"&gt;&lt;/img&gt;
+&lt;img src="https://media.giphy.com/media/QYumYBnNm3Qw8/giphy.gif" style="width: 70%; height: 70%;"&gt;&lt;/img&gt;
+
+---
+class: left
+## `fable`
+
+
+```r
+library(fable) 
+```
+
+
+```r
+cafe &lt;- fpp2::auscafe %&gt;% as_tsibble
+cafe %&gt;% head
+```
+
+&lt;table class="table" style="font-size: 18px; margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; index &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; value &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; 1982 Apr &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.3424 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; 1982 May &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.3421 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; 1982 Jun &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.3287 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; 1982 Jul &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.3385 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; 1982 Aug &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.3315 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; 1982 Sep &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.3419 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+---
+class: left
+## `fable`
+
+
+```r
+# Example by Rob Hyndman
+cafe %&gt;% ARIMA(log(value) ~ pdq(2, 1, 1) + PDQ(2, 1, 2)) %&gt;% forecast() %&gt;% autoplot()
+```
+
+&lt;img src="user2018_full_files/figure-html/fable_plot-1.png" width="1000" height="400" /&gt;
+
+---
+class: inverse, center, middle
+
+&lt;img src="hex/shiny.png" style="width: 50%; height: 50%;"&gt;&lt;/img&gt;
     </textarea>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
 <script>var slideshow = remark.create({
