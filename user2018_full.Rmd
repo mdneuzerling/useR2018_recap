@@ -18,7 +18,6 @@ output:
 ```{r setup, include=FALSE}
 options(htmltools.dir.version = FALSE)
 knitr::opts_chunk$set(cache = TRUE)
-library(tidyverse)
 ```
 
 
@@ -39,17 +38,253 @@ class: inverse, center, middle
 
 # R vs. Python
 
-<iframe src="https://giphy.com/embed/sbZzn5lAsQRAk" width="480" height="270" frameBorder="0" class="giphy-embed" allowFullScreen></iframe>
+![Fighting corgis](https://i.imgur.com/NzppaUe.gif)
+
+---
+class: left
+## R-fresher: Ceci **est** pas une pipe
+
+`%>%` is a *pipe*. It puts the object on the left into the *first* argument of
+the function on the right:
+
+* `4 %>% sqrt` is the same as `sqrt(4)`
+* `data %>% head` is the same as `head(data)`
+
+Or, if we wanted to calculate the average BMI of all droids in the Star Wars movies:
+
+```{r starwars_piped, eval = FALSE}
+starwars %>% 
+    filter(species == "Droid") %>%
+    mutate(BMI = mass / (height / 100)^2) %>% 
+    summarise(avg_BMI = mean(BMI, na.rm = TRUE))
+```
+
+is the same as
+
+```{r avg_droid_mass, eval = FALSE}
+summarise(mutate(filter(starwars, species == "Droid"), BMI = mass / (height / 100)^2), avg_BMI = mean(BMI, na.rm = TRUE))
+```
+
+It's 32.7.
 
 ---
 class: center, middle
 
-<img src="hex/shiny.png" style="width: 50%; height: 50%;"></img>
+## R-fresher: visualisation
+
+```{r bomrang_plot_data, echo = FALSE, warning = FALSE, message = FALSE}
+library(tidyverse)
+library(bomrang)
+
+weather <- get_historical(
+    stationid = "090015",
+    type = "max"
+)
+```
+
+```{r bomrang_plot, echo = FALSE, warning = FALSE, message = FALSE}
+weather_plot <- weather %>% 
+    filter(!is.na(Max_temperature)) %>% # remove missing values  
+    mutate(
+        Season = case_when(
+            Month %in% c(12, 1, 2) ~ "Summer",
+            Month %in% c(3, 4, 5) ~ "Autumn",
+            Month %in% c(6, 7, 8) ~ "Winter",
+            Month %in% c(9, 10, 11) ~ "Spring"
+        ),
+        Season = factor(Season, levels = c("Summer", "Autumn", "Winter", "Spring")) # ordering
+    ) %>%
+    group_by(Year, Season) %>% 
+    summarise(Average_max_temp = mean(Max_temperature)) %>% 
+    ggplot(aes(x = Year, y = Average_max_temp)) +  
+        geom_point() +
+        geom_smooth() + 
+        facet_grid(Season ~ .) +
+        ggtitle("Cape Otway Lighthouse seasonal temperatures")
+```
+
+```{r bomrang_plotly, echo = FALSE, warning = FALSE, message = FALSE}
+library(plotly)
+library(widgetframe)    
+weather_plotly <- weather_plot %>% 
+    ggplotly(height = 450) %>% 
+    config(displayModeBar = F)
+frameWidget(weather_plotly)
+```
 
 ---
-class: center, middle
+class: left
+## R-fresher: visualisation code
 
-<img src="docker.png" style="width: 100%; height: 100%;"></img>  
+```{r bomrang_plot_data_code, eval = FALSE}
+library(tidyverse)
+library(bomrang)
+
+weather <- get_historical(
+    stationid = "090015",
+    type = "max"
+)
+```
+
+```{r bomrang_plot_data_head}
+weather %>% 
+    select(Station_number, Year, Month, Day, Max_temperature) %>% 
+    sample_n(6)
+```
+
+---
+class: left
+## R-fresher: visualisation code
+
+```{r weather_code_1, eval = FALSE}
+weather %>% 
+    filter(!is.na(Max_temperature))
+```
+
+---
+class: left
+## R-fresher: visualisation code
+
+```{r weather_code_2, eval = FALSE}
+weather %>% 
+    filter(!is.na(Max_temperature)) %>%  
+    mutate(
+        Season = case_when(
+            Month %in% c(12, 1, 2) ~ "Summer",
+            Month %in% c(3, 4, 5) ~ "Autumn",
+            Month %in% c(6, 7, 8) ~ "Winter",
+            Month %in% c(9, 10, 11) ~ "Spring"
+        ),
+        Season = factor(Season, levels = c("Summer", "Autumn", "Winter", "Spring")) # ordering
+    )
+```
+
+---
+class: left
+## R-fresher: visualisation code
+
+```{r weather_summarised, eval = TRUE}
+weather %>% 
+    filter(!is.na(Max_temperature)) %>%
+    mutate(
+        Season = case_when(
+            Month %in% c(12, 1, 2) ~ "Summer",
+            Month %in% c(3, 4, 5) ~ "Autumn",
+            Month %in% c(6, 7, 8) ~ "Winter",
+            Month %in% c(9, 10, 11) ~ "Spring"
+        ),
+        Season = factor(Season, levels = c("Summer", "Autumn", "Winter", "Spring")) # ordering
+    ) %>%
+    group_by(Year, Season) %>% 
+    summarise(Average_max_temp = mean(Max_temperature)) -> weather_summarised
+```
+
+--
+```{r weather_summarised_head}
+weather_summarised %>% head(1)
+```
+
+---
+class: left
+## R-fresher: visualisation code
+
+.pull-left[
+```{r weather_partial_plot_code_1, eval = FALSE}
+weather_summarised %>% 
+    ggplot(
+      aes(x = Year, y = Average_max_temp)
+    )
+```
+]
+
+.pull-right[
+```{r weather_partial_plot_1, echo = FALSE, dpi = 300, out.height = 420, out.width = 420}
+weather_summarised %>% 
+    ggplot(
+      aes(x = Year, y = Average_max_temp)
+    )
+```
+]
+
+---
+class: left
+## R-fresher: visualisation code
+
+.pull-left[
+```{r weather_partial_plot_code_2, eval = FALSE}
+weather_summarised %>% 
+    ggplot(
+      aes(x = Year, y = Average_max_temp)
+    ) +
+    geom_point()
+```
+]
+
+.pull-right[
+```{r weather_partial_plot_2, echo = FALSE, dpi = 300, out.height = 420, out.width = 420, warning = FALSE, message = FALSE}
+weather_summarised %>% 
+    ggplot(
+      aes(x = Year, y = Average_max_temp)
+    ) +
+    geom_point()
+```
+]
+
+---
+class: left
+## R-fresher: visualisation code
+
+.pull-left[
+```{r weather_partial_plot_code_3, eval = FALSE}
+weather_summarised %>% 
+    ggplot(
+      aes(x = Year, y = Average_max_temp)
+    ) +
+    geom_point() +
+    geom_smooth()
+```
+]
+
+.pull-right[
+```{r weather_partial_plot_3, echo = FALSE, dpi = 300, out.height = 420, out.width = 420, warning = FALSE, message= FALSE}
+weather_summarised %>% 
+    ggplot(
+      aes(x = Year, y = Average_max_temp)
+    ) +
+    geom_point() +
+    geom_smooth()
+```
+]
+
+---
+class: left
+## R-fresher: visualisation code
+
+.pull-left[
+```{r weather_partial_plot_code_4, eval = FALSE}
+weather_summarised %>% 
+    ggplot(
+      aes(x = Year, y = Average_max_temp)
+    ) +
+    geom_point() +
+    geom_smooth() + 
+    facet_grid(Season ~ .)
+```
+
+We can pass this to plotly with the `ggplotly` function.
+]
+
+.pull-right[
+```{r weather_partial_plot_4, echo = FALSE, dpi = 300, out.height = 420, out.width = 420, warning = FALSE, message = FALSE}
+weather_summarised %>% 
+    ggplot(
+      aes(x = Year, y = Average_max_temp)
+    ) +
+    geom_point() +
+    geom_smooth() + 
+    facet_grid(Season ~ .)
+```
+]
 
 ---
 class: left
@@ -259,3 +494,13 @@ ozone <- read_csv("data/ozoneNA.csv") %>%
 vis_miss(ozone, cluster = TRUE)
 ```
 ]
+
+---
+class: center, middle
+
+<img src="hex/shiny.png" style="width: 50%; height: 50%;"></img>
+
+---
+class: left, middle
+
+<img src="docker.png" style="width: 100%; height: 100%;"></img>  

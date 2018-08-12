@@ -8,6 +8,8 @@
     <link href="libs/remark-css/default.css" rel="stylesheet" />
     <link href="libs/remark-css/default-fonts.css" rel="stylesheet" />
     <script src="libs/htmlwidgets/htmlwidgets.js"></script>
+    <script src="libs/pymjs/pym.v1.js"></script>
+    <script src="libs/widgetframe-binding/widgetframe.js"></script>
     <script src="libs/jquery/jquery.min.js"></script>
     <link href="libs/leaflet/leaflet.css" rel="stylesheet" />
     <script src="libs/leaflet/leaflet.js"></script>
@@ -43,17 +45,224 @@ class: inverse, center, middle
 
 # R vs. Python
 
-&lt;iframe src="https://giphy.com/embed/sbZzn5lAsQRAk" width="480" height="270" frameBorder="0" class="giphy-embed" allowFullScreen&gt;&lt;/iframe&gt;
+![Fighting corgis](https://i.imgur.com/NzppaUe.gif)
+
+---
+class: left
+## R-fresher: Ceci **est** pas une pipe
+
+`%&gt;%` is a *pipe*. It puts the object on the left into the *first* argument of
+the function on the right:
+
+* `4 %&gt;% sqrt` is the same as `sqrt(4)`
+* `data %&gt;% head` is the same as `head(data)`
+
+Or, if we wanted to calculate the average BMI of all droids in the Star Wars movies:
+
+
+```r
+starwars %&gt;% 
+    filter(species == "Droid") %&gt;%
+    mutate(BMI = mass / (height / 100)^2) %&gt;% 
+    summarise(avg_BMI = mean(BMI, na.rm = TRUE))
+```
+
+is the same as
+
+
+```r
+summarise(mutate(filter(starwars, species == "Droid"), BMI = mass / (height / 100)^2), avg_BMI = mean(BMI, na.rm = TRUE))
+```
+
+It's 32.7.
 
 ---
 class: center, middle
 
-&lt;img src="hex/shiny.png" style="width: 50%; height: 50%;"&gt;&lt;/img&gt;
+## R-fresher: visualisation
+
+
+
+
+
+<div id="htmlwidget-7784fcff432ee6ac69e2" style="width:100%;height:450px;" class="widgetframe html-widget"></div>
+<script type="application/json" data-for="htmlwidget-7784fcff432ee6ac69e2">{"x":{"url":"user2018_full_files/figure-html//widgets/widget_bomrang_plotly.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
 
 ---
-class: center, middle
+class: left
+## R-fresher: visualisation code
 
-&lt;img src="docker.png" style="width: 100%; height: 100%;"&gt;&lt;/img&gt;  
+
+```r
+library(tidyverse)
+library(bomrang)
+
+weather &lt;- get_historical(
+    stationid = "090015",
+    type = "max"
+)
+```
+
+
+```r
+weather %&gt;% 
+    select(Station_number, Year, Month, Day, Max_temperature) %&gt;% 
+    sample_n(6)
+```
+
+```
+##       Station_number Year Month Day Max_temperature
+## 5427           90015 1878    11   9            18.9
+## 22746          90015 1926     4  11            17.3
+## 52658          90015 2008     3   3            29.5
+## 36199          90015 1963     2   9            19.4
+## 26884          90015 1937     8   9            16.7
+## 54953          90015 2014     6  15            13.7
+```
+
+---
+class: left
+## R-fresher: visualisation code
+
+
+```r
+weather %&gt;% 
+    filter(!is.na(Max_temperature))
+```
+
+---
+class: left
+## R-fresher: visualisation code
+
+
+```r
+weather %&gt;% 
+    filter(!is.na(Max_temperature)) %&gt;%  
+    mutate(
+        Season = case_when(
+            Month %in% c(12, 1, 2) ~ "Summer",
+            Month %in% c(3, 4, 5) ~ "Autumn",
+            Month %in% c(6, 7, 8) ~ "Winter",
+            Month %in% c(9, 10, 11) ~ "Spring"
+        ),
+        Season = factor(Season, levels = c("Summer", "Autumn", "Winter", "Spring")) # ordering
+    )
+```
+
+---
+class: left
+## R-fresher: visualisation code
+
+
+```r
+weather %&gt;% 
+    filter(!is.na(Max_temperature)) %&gt;%
+    mutate(
+        Season = case_when(
+            Month %in% c(12, 1, 2) ~ "Summer",
+            Month %in% c(3, 4, 5) ~ "Autumn",
+            Month %in% c(6, 7, 8) ~ "Winter",
+            Month %in% c(9, 10, 11) ~ "Spring"
+        ),
+        Season = factor(Season, levels = c("Summer", "Autumn", "Winter", "Spring")) # ordering
+    ) %&gt;%
+    group_by(Year, Season) %&gt;% 
+    summarise(Average_max_temp = mean(Max_temperature)) -&gt; weather_summarised
+```
+
+--
+
+```r
+weather_summarised %&gt;% head(1)
+```
+
+```
+## # A tibble: 1 x 3
+## # Groups:   Year [1]
+##    Year Season Average_max_temp
+##   &lt;int&gt; &lt;fct&gt;             &lt;dbl&gt;
+## 1  1864 Summer             20.4
+```
+
+---
+class: left
+## R-fresher: visualisation code
+
+.pull-left[
+
+```r
+weather_summarised %&gt;% 
+    ggplot(
+      aes(x = Year, y = Average_max_temp)
+    )
+```
+]
+
+.pull-right[
+&lt;img src="user2018_full_files/figure-html/weather_partial_plot_1-1.png" width="420" height="420" /&gt;
+]
+
+---
+class: left
+## R-fresher: visualisation code
+
+.pull-left[
+
+```r
+weather_summarised %&gt;% 
+    ggplot(
+      aes(x = Year, y = Average_max_temp)
+    ) +
+    geom_point()
+```
+]
+
+.pull-right[
+&lt;img src="user2018_full_files/figure-html/weather_partial_plot_2-1.png" width="420" height="420" /&gt;
+]
+
+---
+class: left
+## R-fresher: visualisation code
+
+.pull-left[
+
+```r
+weather_summarised %&gt;% 
+    ggplot(
+      aes(x = Year, y = Average_max_temp)
+    ) +
+    geom_point() +
+    geom_smooth()
+```
+]
+
+.pull-right[
+&lt;img src="user2018_full_files/figure-html/weather_partial_plot_3-1.png" width="420" height="420" /&gt;
+]
+
+---
+class: left
+## R-fresher: visualisation code
+
+.pull-left[
+
+```r
+weather_summarised %&gt;% 
+    ggplot(
+      aes(x = Year, y = Average_max_temp)
+    ) +
+    geom_point() +
+    geom_smooth() + 
+    facet_grid(Season ~ .)
+```
+
+We can pass this to plotly with the `ggplotly` function.
+]
+
+.pull-right[
+&lt;img src="user2018_full_files/figure-html/weather_partial_plot_4-1.png" width="420" height="420" /&gt;
+]
 
 ---
 class: left
@@ -218,6 +427,16 @@ vis_miss(ozone)
 .pull-right[
 &lt;img src="user2018_full_files/figure-html/naniar_plot-1.png" width="420" height="420" /&gt;
 ]
+
+---
+class: center, middle
+
+&lt;img src="hex/shiny.png" style="width: 50%; height: 50%;"&gt;&lt;/img&gt;
+
+---
+class: left, middle
+
+&lt;img src="docker.png" style="width: 100%; height: 100%;"&gt;&lt;/img&gt;
     </textarea>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
 <script>var slideshow = remark.create({
