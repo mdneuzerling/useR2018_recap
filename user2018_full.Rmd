@@ -18,6 +18,7 @@ output:
 ```{r setup, include=FALSE}
 options(htmltools.dir.version = FALSE)
 knitr::opts_chunk$set(cache = TRUE)
+library(kableExtra)
 ```
 
 
@@ -33,12 +34,20 @@ class: inverse, center, middle
 
 <img src="hex/r2d3.jpg" style="width: 45%; height: 45%;"></img>   <img src="hex/recipes.jpg" style="width: 45%; height: 45%;"></img>
 
+Hex logos are the cutest part of R
+
 ---
 class: inverse, center, middle
 
 # R vs. Python
 
 ![Fighting corgis](https://i.imgur.com/NzppaUe.gif)
+
+---
+class: inverse, center, middle
+
+#R-fresher: Piping data
+<img src="https://i.giphy.com/Y8qTuvMUjSh7a.gif" style="width: 60%; height: 60%;"></img>
 
 ---
 class: left
@@ -66,6 +75,12 @@ summarise(mutate(filter(starwars, species == "Droid"), BMI = mass / (height / 10
 ```
 
 It's 32.7.
+
+---
+class: inverse, center, middle
+
+#R-fresher: Visualisation
+<img src="https://i.giphy.com/media/3og0IExSrnfW2kUaaI/source.gif" style="width: 70%; height: 70%;"></img>
 
 ---
 class: center, middle
@@ -114,27 +129,30 @@ frameWidget(weather_plotly)
 
 ---
 class: left
-## R-fresher: visualisation code
+## R-fresher: Visualisation
 
 ```{r bomrang_plot_data_code, eval = FALSE}
 library(tidyverse)
 library(bomrang)
 
-weather <- get_historical(
-    stationid = "090015",
-    type = "max"
-)
+weather <- get_historical(stationid = "090015", type = "max")
 ```
 
-```{r bomrang_plot_data_head}
-weather %>% 
-    select(Station_number, Year, Month, Day, Max_temperature) %>% 
-    sample_n(6)
+--
+
+```{r bomrang_plot_data_head, eval = FALSE}
+weather %>% sample_n(6)
+```
+
+```{r bomrang_plot_data_head_display, echo = FALSE}
+weather %>% sample_n(6) %>% 
+    knitr::kable(format = "html") %>% 
+    kable_styling(font_size = 18)
 ```
 
 ---
 class: left
-## R-fresher: visualisation code
+## R-fresher: Visualisation
 
 ```{r weather_code_1, eval = FALSE}
 weather %>% 
@@ -143,7 +161,7 @@ weather %>%
 
 ---
 class: left
-## R-fresher: visualisation code
+## R-fresher: Visualisation
 
 ```{r weather_code_2, eval = FALSE}
 weather %>% 
@@ -161,7 +179,7 @@ weather %>%
 
 ---
 class: left
-## R-fresher: visualisation code
+## R-fresher: Visualisation
 
 ```{r weather_summarised, eval = TRUE}
 weather %>% 
@@ -180,13 +198,15 @@ weather %>%
 ```
 
 --
-```{r weather_summarised_head}
-weather_summarised %>% head(1)
+```{r weather_summarised_head_display, echo = FALSE}
+weather_summarised %>% ungroup %>% sample_n(4) %>% 
+    knitr::kable(format = "html") %>% 
+    kable_styling(font_size = 18)
 ```
 
 ---
 class: left
-## R-fresher: visualisation code
+## R-fresher: Visualisation
 
 .pull-left[
 ```{r weather_partial_plot_code_1, eval = FALSE}
@@ -198,7 +218,7 @@ weather_summarised %>%
 ]
 
 .pull-right[
-```{r weather_partial_plot_1, echo = FALSE, dpi = 300, out.height = 420, out.width = 420}
+```{r weather_partial_plot_1, echo = FALSE, dpi = 300, fig.width = 5, fig.height = 5, out.height = 500, out.width = 500}
 weather_summarised %>% 
     ggplot(
       aes(x = Year, y = Average_max_temp)
@@ -208,7 +228,7 @@ weather_summarised %>%
 
 ---
 class: left
-## R-fresher: visualisation code
+## R-fresher: Visualisation
 
 .pull-left[
 ```{r weather_partial_plot_code_2, eval = FALSE}
@@ -221,7 +241,7 @@ weather_summarised %>%
 ]
 
 .pull-right[
-```{r weather_partial_plot_2, echo = FALSE, dpi = 300, out.height = 420, out.width = 420, warning = FALSE, message = FALSE}
+```{r weather_partial_plot_2, echo = FALSE, dpi = 300, fig.width = 5, fig.height = 5, out.height = 500, out.width = 500}
 weather_summarised %>% 
     ggplot(
       aes(x = Year, y = Average_max_temp)
@@ -232,7 +252,7 @@ weather_summarised %>%
 
 ---
 class: left
-## R-fresher: visualisation code
+## R-fresher: Visualisation
 
 .pull-left[
 ```{r weather_partial_plot_code_3, eval = FALSE}
@@ -246,7 +266,7 @@ weather_summarised %>%
 ]
 
 .pull-right[
-```{r weather_partial_plot_3, echo = FALSE, dpi = 300, out.height = 420, out.width = 420, warning = FALSE, message= FALSE}
+```{r weather_partial_plot_3, echo = FALSE, dpi = 300, fig.width = 5, fig.height = 5, out.height = 500, out.width = 500, message = FALSE}
 weather_summarised %>% 
     ggplot(
       aes(x = Year, y = Average_max_temp)
@@ -258,7 +278,7 @@ weather_summarised %>%
 
 ---
 class: left
-## R-fresher: visualisation code
+## R-fresher: Visualisation
 
 .pull-left[
 ```{r weather_partial_plot_code_4, eval = FALSE}
@@ -275,7 +295,7 @@ We can pass this to plotly with the `ggplotly` function.
 ]
 
 .pull-right[
-```{r weather_partial_plot_4, echo = FALSE, dpi = 300, out.height = 420, out.width = 420, warning = FALSE, message = FALSE}
+```{r weather_partial_plot_4, echo = FALSE, dpi = 300, fig.width = 5, fig.height = 5, out.height = 500, out.width = 500, message = FALSE}
 weather_summarised %>% 
     ggplot(
       aes(x = Year, y = Average_max_temp)
@@ -287,9 +307,156 @@ weather_summarised %>%
 ]
 
 ---
-class: left
+class: inverse, center, middle
 
-## Modifying data with recipes
+#R-fresher: Modelling
+<img src="https://i.imgur.com/muNWT5A.gif" style="width: 40%; height: 40%;"></img>
+
+---
+class: left
+## R-fresher: Modelling
+
+```{r diamonds_nrow}
+diamonds %>% nrow
+```
+
+```{r diamonds_head, eval = FALSE}
+diamonds %>% head
+```
+
+```{r diamonds_head_display, echo = FALSE}
+diamonds %>% head %>% 
+    knitr::kable(format = "html") %>% 
+    kable_styling(font_size = 18)
+```
+
+---
+class: left
+## R-fresher: Modelling
+
+The `glance` function from the `broom` library makes model results tidy.
+```{r broom, cache = FALSE, message = FALSE, warning = FALSE}
+library(broom)
+```
+
+```{r diamonds_one_lm, eval = FALSE}
+diamonds %>% 
+    lm(price ~ color + carat + cut + clarity + depth + table, data = .) %>% 
+    glance
+```
+
+```{r diamonds_one_display, echo = FALSE}
+diamonds %>% 
+    lm(price ~ color + carat + cut + clarity + depth + table, data = .) %>%
+    glance %>% 
+    knitr::kable(format = "html") %>% 
+    kable_styling(font_size = 16)
+```
+
+---
+class: left
+## R-fresher: Modelling
+
+Suppose we wanted to make a different model for every `color`.
+
+`glance` gives one row per model.
+
+```{r diamonds_many_lm, eval = FALSE}
+diamonds %>% 
+    group_by(color) %>% 
+    do(glance(lm(price ~ carat + cut + clarity + depth + table, data = .)))
+```
+
+```{r diamonds_many_display, echo = FALSE}
+diamonds %>% 
+    group_by(color) %>% 
+    do(glance(lm(price ~ carat + cut + clarity + depth + table, data = .))) %>% 
+    knitr::kable(format = "html") %>% 
+    kable_styling(font_size = 16)
+```
+
+---
+class: left
+## R-fresher: Modelling
+
+We can use the `augment` function from the `broom` package to get 
+*observation-level* statistics for our linear models.
+
+```{r diamonds_augment_lm, eval = FALSE}
+diamonds %>% 
+    group_by(color) %>% 
+    do(augment(lm(price ~ carat + cut + clarity + depth + table, data = .))) %>% 
+    head
+```
+
+```{r diamonds_augment_display, echo = FALSE}
+diamonds %>% 
+    group_by(color) %>% 
+    do(augment(lm(price ~ carat + cut + clarity + depth + table, data = .))) %>%
+    head %>% 
+    knitr::kable(format = "html") %>% 
+    kable_styling(font_size = 16)
+```
+
+According to these models, some diamonds have... negative prices?
+
+
+---
+class: left
+## R-fresher: Modelling
+
+```{r diamonds_ggplot, eval = FALSE}
+diamonds %>% 
+    group_by(color) %>% 
+    do(augment(lm(price ~ carat + cut + clarity + depth + table, data = .))) %>%
+    ggplot(aes(x = .fitted, y = .resid)) +
+        geom_hline(yintercept = 0) +
+        geom_point() + 
+        facet_wrap(color ~ ., ncol = 2)
+```
+
+---
+class: center
+## R-fresher: Modelling
+
+```{r diamonds_ggplot_display, echo = FALSE, message = FALSE, warning = FALSE, dpi = 300, fig.width = 10, fig.height = 5, out.height = 500, out.width = 1000}
+
+diamonds %>% 
+    group_by(color) %>% 
+    do(augment(lm(price ~ carat + cut + clarity + depth + table, data = .))) %>%
+    ggplot(aes(x = .fitted, y = .resid)) +
+        geom_hline(yintercept = 0) +
+        geom_point() + 
+        facet_wrap(color ~ ., ncol = 2)
+```
+
+---
+class: center
+## R-fresher: Modelling
+
+.pull-left[
+```{r diamond_unmodified, echo = FALSE, message = FALSE, warning = FALSE, dpi = 300, fig.width = 5, fig.height = 5, out.height = 500, out.width = 500}
+
+diamonds %>% 
+    ggplot(aes(x = carat, y = price)) + 
+    geom_point() + 
+    ggtitle("Unmodified")
+```
+]
+
+.pull-right[
+```{r diamond_modified, echo = FALSE, message = FALSE, warning = FALSE, dpi = 300, fig.width = 5, fig.height = 5, out.height = 500, out.width = 500}
+
+diamonds %>% 
+    ggplot(aes(x = log(carat), y = log(price))) + 
+    geom_point() + 
+    ggtitle("Log-transformed")
+```
+]
+
+---
+class: left
+## Modifying data
 
 * Centering
 * Scaling
@@ -299,7 +466,7 @@ class: left
 * Missing value imputation
 * Feature engineering
 
-```{r library_recipes, warning = FALSE, message = FALSE}
+```{r library_recipes, cache = FALSE, warning = FALSE, message = FALSE}
 library(recipes)
 ```
 
@@ -314,21 +481,9 @@ ames <- AmesHousing::make_ames()
 ```{r ames_leaflet, warning = FALSE, message = FALSE, eval = FALSE}
 library(leaflet)
 
-colour_palette <- colorNumeric(
-    palette = colorRampPalette(
-            c('yellow', 'red')
-        )(length(ames$Sale_Price)), 
-    domain = ames$Sale_Price
-)
-
 leaflet(ames) %>% 
     addTiles() %>% 
-    addCircleMarkers(
-        radius = 2, 
-        color = colour_palette(
-            ames$Sale_Price
-        )
-    )
+    addCircleMarkers(radius = 1)
 ```
 ]
 
@@ -336,14 +491,9 @@ leaflet(ames) %>%
 ```{r ames_leaflet_code, echo = FALSE, message = FALSE, warning = FALSE, out.height = 420, out.width = 420}
 library(leaflet)
 
-colour_palette <- colorNumeric(
-  palette = colorRampPalette(c('yellow', 'red'))(length(ames$Sale_Price)), 
-  domain = ames$Sale_Price
-)
-
 leaflet(ames) %>% 
     addTiles() %>% 
-    addCircleMarkers(radius = 1, color = colour_palette(ames$Sale_Price))
+    addCircleMarkers(radius = 1)
 ```
 ]
 
@@ -363,7 +513,7 @@ ames %>%
 ]
 
 .pull-right[
-```{r neighbourhood_plot, echo = FALSE, dpi = 300, out.height = 420, out.width = 420}
+```{r neighbourhood_plot, echo = FALSE, dpi = 300, fig.width = 5, fig.height = 5, out.height = 500, out.width = 500}
 ames %>% 
     ggplot(aes(x = Neighborhood)) +
     geom_bar(
@@ -387,7 +537,7 @@ ames %>%
 ]
 
 .pull-right[
-```{r lot_area_plot, warning = FALSE, echo = FALSE, dpi = 300, out.height = 420, out.width = 420}
+```{r lot_area_plot, warning = FALSE, echo = FALSE, dpi = 300, fig.width = 5, fig.height = 5, out.height = 500, out.width = 500}
 ames %>% 
     ggplot(aes(x = Lot_Area)) + 
     geom_density() + 
@@ -441,7 +591,7 @@ ames_baked_lm <- lm(
 ```
 
 .pull-left[
-```{r ames_unmodified_lm, warning = FALSE, message = FALSE, echo = FALSE, dpi = 300, out.height = 420, out.width = 420}
+```{r ames_unmodified_lm, warning = FALSE, message = FALSE, echo = FALSE, dpi = 300, fig.width = 5, fig.height = 5, out.height = 500, out.width = 500}
 ames_lm %>% ggplot(aes(.fitted, .resid)) +
     geom_hline(yintercept = 0) +
     geom_point() +
@@ -452,7 +602,7 @@ ames_lm %>% ggplot(aes(.fitted, .resid)) +
 ]
 
 .pull-right[
-```{r ames_modified_lm, warning = FALSE, message = FALSE, echo = FALSE, dpi = 300, out.height = 420, out.width = 420}
+```{r ames_modified_lm, warning = FALSE, message = FALSE, echo = FALSE, dpi = 300, fig.width = 5, fig.height = 5, out.height = 500, out.width = 500}
 ames_baked_lm %>% ggplot(aes(.fitted, .resid)) +
     geom_hline(yintercept = 0) +
     geom_point() +
@@ -464,9 +614,11 @@ ames_baked_lm %>% ggplot(aes(.fitted, .resid)) +
 ---
 class: inverse, middle, center
 
-# Missing value imputation
+# Missing values
 
 <img src = "missing_value_imputation.jpg" style="width: 30%; height: 30%;"></img>
+
+Mean value imputation
 
 ---
 class: middle, center
