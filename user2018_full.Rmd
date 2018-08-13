@@ -59,7 +59,17 @@ the function on the right:
 * `4 %>% sqrt` is the same as `sqrt(4)`
 * `data %>% head` is the same as `head(data)`
 
---
+<img src="hex/magrittr.png" style="width: 15%; height: 15%;"></img>
+
+---
+class: left
+## Refresh-R: Ceci **est** pas une pipe
+
+`%>%` is a *pipe*. It puts the object on the left into the *first* argument of
+the function on the right:
+
+* `4 %>% sqrt` is the same as `sqrt(4)`
+* `data %>% head` is the same as `head(data)`
 
 Or, if we wanted to calculate the average BMI of all droids in the Star Wars movies:
 
@@ -133,14 +143,25 @@ frameWidget(weather_plotly)
 class: left
 ## Refresh-R: Visualisation
 
-```{r bomrang_plot_data_code, eval = FALSE}
+```{r bomrang_plot_data_code_1, eval = FALSE}
 library(tidyverse)
 library(bomrang)
 
 weather <- get_historical(stationid = "090015", type = "max")
 ```
 
---
+<img src="hex/tidyverse.png" style="width: 15%; height: 15%;"></img><img src="hex/bomrang.png" style="width: 15%; height: 15%;"></img>
+
+---
+class: left
+## Refresh-R: Visualisation
+
+```{r bomrang_plot_data_code_2, eval = FALSE}
+library(tidyverse)
+library(bomrang)
+
+weather <- get_historical(stationid = "090015", type = "max")
+```
 
 ```{r bomrang_plot_data_head, eval = FALSE}
 weather %>% sample_n(6)
@@ -355,6 +376,8 @@ diamonds %>%
     kable_styling(font_size = 16)
 ```
 
+<img src="hex/broom.png" style="width: 15%; height: 15%;"></img>
+
 ---
 class: left
 ## Refresh-R: Modelling
@@ -480,6 +503,8 @@ class: left
 library(recipes)
 ```
 
+<img src="hex/recipes.png" style="width: 18%; height: 18%;"></img>
+
 ---
 ## `ames` housing data
 
@@ -558,14 +583,24 @@ ames %>%
 ---
 ## Preparing and baking a recipe
 
-```{r data_split, message = FALSE, warning = FALSE}
+```{r data_split_1, message = FALSE, warning = FALSE}
 library(rsample)
 data_split <- initial_split(ames, strata = "Sale_Price", p = 0.75)
 ames_train <- training(data_split)
 ames_test <- testing(data_split)
 ```
 
---
+<img src="hex/rsample.png" style="width: 15%; height: 15%;"></img>
+
+---
+## Preparing and baking a recipe
+
+```{r data_split_2, eval = FALSE}
+library(rsample)
+data_split <- initial_split(ames, strata = "Sale_Price", p = 0.75)
+ames_train <- training(data_split)
+ames_test <- testing(data_split)
+```
 
 ```{r recipe}
 recipe(
@@ -640,6 +675,9 @@ ozone <- read_csv("ozoneNA.csv") %>%
     select(-X1, -WindDirection)
 vis_miss(ozone)
 ```
+
+<img src="hex/naniar.png" style="width: 30%; height: 30%;"></img>
+
 ]
 
 .pull-right[
@@ -674,6 +712,7 @@ class: left
 ## `fable`
 
 ```{r library_fable, warning = FALSE, message = FALSE}
+library(tsibble) 
 library(fable) 
 ```
 
@@ -682,12 +721,18 @@ cafe <- fpp2::auscafe %>% as_tsibble
 cafe %>% head
 ```
 
+.pull-left[
 ```{r cafe_data_display, echo = FALSE}
 cafe  <- fpp2::auscafe %>% as_tsibble
 cafe %>% head %>% 
     knitr::kable(format = "html") %>% 
     kable_styling(font_size = 18)
 ```
+]
+
+.pull-right[
+<img src="hex/tsibble.png" style="width: 30%; height: 30%;"></img><img src="hex/fable.png" style="width: 30%; height: 30%;"></img>
+]
 
 ---
 class: left
