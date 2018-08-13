@@ -46,12 +46,12 @@ class: inverse, center, middle
 ---
 class: inverse, center, middle
 
-#R-fresher: Piping data
+#Refresh-R: Piping data
 <img src="https://i.giphy.com/Y8qTuvMUjSh7a.gif" style="width: 60%; height: 60%;"></img>
 
 ---
 class: left
-## R-fresher: Ceci **est** pas une pipe
+## Refresh-R: Ceci **est** pas une pipe
 
 `%>%` is a *pipe*. It puts the object on the left into the *first* argument of
 the function on the right:
@@ -81,13 +81,13 @@ It's 32.7.
 ---
 class: inverse, center, middle
 
-#R-fresher: Visualisation
+#Refresh-R: Visualisation
 <img src="https://i.giphy.com/media/3og0IExSrnfW2kUaaI/source.gif" style="width: 70%; height: 70%;"></img>
 
 ---
 class: center, middle
 
-## R-fresher: visualisation
+## Refresh-R: visualisation
 
 ```{r bomrang_plot_data, echo = FALSE, warning = FALSE, message = FALSE}
 library(tidyverse)
@@ -131,7 +131,7 @@ frameWidget(weather_plotly)
 
 ---
 class: left
-## R-fresher: Visualisation
+## Refresh-R: Visualisation
 
 ```{r bomrang_plot_data_code, eval = FALSE}
 library(tidyverse)
@@ -154,7 +154,7 @@ weather %>% sample_n(6) %>%
 
 ---
 class: left
-## R-fresher: Visualisation
+## Refresh-R: Visualisation
 
 ```{r weather_code_1, eval = FALSE}
 weather %>% 
@@ -163,7 +163,7 @@ weather %>%
 
 ---
 class: left
-## R-fresher: Visualisation
+## Refresh-R: Visualisation
 
 ```{r weather_code_2, eval = FALSE}
 weather %>% 
@@ -181,7 +181,7 @@ weather %>%
 
 ---
 class: left
-## R-fresher: Visualisation
+## Refresh-R: Visualisation
 
 ```{r weather_summarised, eval = TRUE}
 weather %>% 
@@ -208,7 +208,7 @@ weather_summarised %>% ungroup %>% sample_n(4) %>%
 
 ---
 class: left
-## R-fresher: Visualisation
+## Refresh-R: Visualisation
 
 .pull-left[
 ```{r weather_partial_plot_code_1, eval = FALSE}
@@ -230,7 +230,7 @@ weather_summarised %>%
 
 ---
 class: left
-## R-fresher: Visualisation
+## Refresh-R: Visualisation
 
 .pull-left[
 ```{r weather_partial_plot_code_2, eval = FALSE}
@@ -254,7 +254,7 @@ weather_summarised %>%
 
 ---
 class: left
-## R-fresher: Visualisation
+## Refresh-R: Visualisation
 
 .pull-left[
 ```{r weather_partial_plot_code_3, eval = FALSE}
@@ -280,7 +280,7 @@ weather_summarised %>%
 
 ---
 class: left
-## R-fresher: Visualisation
+## Refresh-R: Visualisation
 
 .pull-left[
 ```{r weather_partial_plot_code_4, eval = FALSE}
@@ -311,12 +311,12 @@ weather_summarised %>%
 ---
 class: inverse, center, middle
 
-#R-fresher: Modelling
+#Refresh-R: Modelling
 <img src="https://i.imgur.com/muNWT5A.gif" style="width: 40%; height: 40%;"></img>
 
 ---
 class: left
-## R-fresher: Modelling
+## Refresh-R: Modelling
 
 ```{r diamonds_nrow}
 diamonds %>% nrow
@@ -334,7 +334,7 @@ diamonds %>% head %>%
 
 ---
 class: left
-## R-fresher: Modelling
+## Refresh-R: Modelling
 
 The `glance` function from the `broom` library makes model results tidy.
 ```{r broom, cache = FALSE, message = FALSE, warning = FALSE}
@@ -357,7 +357,7 @@ diamonds %>%
 
 ---
 class: left
-## R-fresher: Modelling
+## Refresh-R: Modelling
 
 Suppose we wanted to make a different model for every `color`.
 
@@ -379,7 +379,7 @@ diamonds %>%
 
 ---
 class: left
-## R-fresher: Modelling
+## Refresh-R: Modelling
 
 We can use the `augment` function from the `broom` package to get 
 *observation-level* statistics for our linear models.
@@ -405,7 +405,7 @@ According to these models, some diamonds have... negative prices?
 
 ---
 class: left
-## R-fresher: Modelling
+## Refresh-R: Modelling
 
 ```{r diamonds_ggplot, eval = FALSE}
 diamonds %>% 
@@ -419,7 +419,7 @@ diamonds %>%
 
 ---
 class: center
-## R-fresher: Modelling
+## Refresh-R: Modelling
 
 ```{r diamonds_ggplot_display, echo = FALSE, message = FALSE, warning = FALSE, dpi = 300, fig.width = 10, fig.height = 5, out.height = 500, out.width = 1000}
 
@@ -434,7 +434,7 @@ diamonds %>%
 
 ---
 class: center
-## R-fresher: Modelling
+## Refresh-R: Modelling
 
 .pull-left[
 ```{r diamond_unmodified, echo = FALSE, message = FALSE, warning = FALSE, dpi = 300, fig.width = 5, fig.height = 5, out.height = 500, out.width = 500}
