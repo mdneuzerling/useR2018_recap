@@ -114,9 +114,9 @@ weather_plot <- weather %>%
     group_by(Year, Season) %>% 
     summarise(Average_max_temp = mean(Max_temperature)) %>% 
     ggplot(aes(x = Year, y = Average_max_temp)) +  
-        geom_point() +
-        geom_smooth() + 
         facet_grid(Season ~ .) +
+        geom_point() +
+        geom_smooth() +
         ggtitle("Cape Otway Lighthouse seasonal temperatures")
 ```
 
@@ -237,8 +237,8 @@ class: left
 weather_summarised %>% 
     ggplot(
       aes(x = Year, y = Average_max_temp)
-    ) +
-    geom_point()
+    ) + 
+    facet_grid(Season ~ .)
 ```
 ]
 
@@ -247,8 +247,8 @@ weather_summarised %>%
 weather_summarised %>% 
     ggplot(
       aes(x = Year, y = Average_max_temp)
-    ) +
-    geom_point()
+    ) + 
+    facet_grid(Season ~ .)
 ```
 ]
 
@@ -261,9 +261,9 @@ class: left
 weather_summarised %>% 
     ggplot(
       aes(x = Year, y = Average_max_temp)
-    ) +
-    geom_point() +
-    geom_smooth()
+    ) + 
+    facet_grid(Season ~ .) +
+    geom_point() 
 ```
 ]
 
@@ -272,9 +272,9 @@ weather_summarised %>%
 weather_summarised %>% 
     ggplot(
       aes(x = Year, y = Average_max_temp)
-    ) +
-    geom_point() +
-    geom_smooth()
+    ) + 
+    facet_grid(Season ~ .) +
+    geom_point() 
 ```
 ]
 
@@ -288,9 +288,9 @@ weather_summarised %>%
     ggplot(
       aes(x = Year, y = Average_max_temp)
     ) +
+    facet_grid(Season ~ .) +
     geom_point() +
-    geom_smooth() + 
-    facet_grid(Season ~ .)
+    geom_smooth() 
 ```
 
 We can pass this to plotly with the `ggplotly` function.
@@ -302,9 +302,9 @@ weather_summarised %>%
     ggplot(
       aes(x = Year, y = Average_max_temp)
     ) +
+    facet_grid(Season ~ .) +
     geom_point() +
-    geom_smooth() + 
-    facet_grid(Season ~ .)
+    geom_smooth() 
 ```
 ]
 

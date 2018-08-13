@@ -319,8 +319,8 @@ class: left
 weather_summarised %&gt;% 
     ggplot(
       aes(x = Year, y = Average_max_temp)
-    ) +
-    geom_point()
+    ) + 
+    facet_grid(Season ~ .)
 ```
 ]
 
@@ -338,9 +338,9 @@ class: left
 weather_summarised %&gt;% 
     ggplot(
       aes(x = Year, y = Average_max_temp)
-    ) +
-    geom_point() +
-    geom_smooth()
+    ) + 
+    facet_grid(Season ~ .) +
+    geom_point() 
 ```
 ]
 
@@ -359,9 +359,9 @@ weather_summarised %&gt;%
     ggplot(
       aes(x = Year, y = Average_max_temp)
     ) +
+    facet_grid(Season ~ .) +
     geom_point() +
-    geom_smooth() + 
-    facet_grid(Season ~ .)
+    geom_smooth() 
 ```
 
 We can pass this to plotly with the `ggplotly` function.
