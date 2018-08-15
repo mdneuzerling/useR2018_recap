@@ -1,5 +1,5 @@
 # r_presentation_to_python_users
-Slides for a presentation I gave to some Python-using data scientists on 2018-08-17
+Slides for a presentation I gave to some Python-using data scientists on 2018-08-17. Currently hosted on https://mdneuzerling.com/Rmd/user2018_full.html.
 
 This presentation was originally meant to be a summary of the [UseR2018 conference](https://user2018.r-project.org/), but it became more about spruiking the wonders of R. My presentation style makes the slides useless by themselves, but please reach out if you have any questions.
 
